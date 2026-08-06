@@ -1,12 +1,93 @@
-<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <title>Index</title>
-    <link rel='stylesheet' href='main.css'>
-</head>
-<body>
-    <h1>Hello, World!</h1>
-</body>
-</html>
+{% extends "layout.html" %}
+
+{% block title %}{{data.title}}{% endblock %}
+
+{% block body %}
+    <h1>{{data.message}}</h1>
+
+    <fieldset>
+        <legend>Abecedario</legend>
+        <form>
+            <label for="rdAbecedario26">26 letras:</label>
+            <input type="radio" id="rdAbecedario26" name="rdAbecedario">
+            <label for="rdAbecedario27">27 letras:</label>
+            <input type="radio" id="rdAbecedario27" name="rdAbecedario">
+            <br><br>
+            <label for="chkInverso">Inverso:</label>
+            <input type="checkbox" id="chkInverso" name="chkInverso">
+            <label for="chkAlfanumerico">Alfanumerico:</label>
+            <input type="checkbox" id="chkAlfanumerico" name="chkAlfanumerico">
+            <br><br>
+            <label for="txtLetraInicial">Iniciar desde:</label>
+            <input type="text" id="txtLetraInicial" name="txtLetraInicial">
+            <label for="txtPalabraClave">Palabra clave:</label>
+            <input type="text" id="txtPalabraClave" name="txtPalabraClave">
+            <br><br>
+            <button id="btnGenerar">Generar Abecedario</button>
+            <p id="resultado"></p>
+        </form>
+    </fieldset>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th colspan="{{ data.abecedarioBase|length }}">ABECEDARIO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for letra in data.abecedarioBase %}                
+                    <td>{{ letra }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+    <table border="1">
+        <thead>
+            <tr>
+                <th colspan="{{ data.abecedarioBase|length }}">ABECEDARIO GENERADO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for letra in data.abecedarioGenerado %}                
+                    <td>{{ letra }}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+{% endblock %}
+
+
+<script>
+    document.getElementById("btnGenerar").addEventListener("click", () => {
+       fetch('/generar', {
+            method: 'POST'
+            /*headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                abecedario: document.querySelector('input[name="rdAbecedario"]:checked')?.id,
+                inverso: document.getElementById("chkInverso").checked,
+                alfanumerico: document.getElementById("chkAlfanumerico").checked,
+                letraInicial: document.getElementById("txtLetraInicial").value,
+                palabraClave: document.getElementById("txtPalabraClave").value
+            })*/
+        })
+        .then(response => response.json())
+        .then(data => {
+             document.getElementById("resultado").textContent = data.mensaje;
+            // Actualizar la tabla con el abecedario generado
+            /*const tbody = document.querySelector('table:nth-of-type(2) tbody');
+            tbody.innerHTML = '';
+            const row = document.createElement('tr');
+            data.abecedarioGenerado.forEach(letra => {
+                const cell = document.createElement('td');
+                cell.textContent = letra;
+                row.appendChild(cell);
+            });
+            tbody.appendChild(row);*/
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
