@@ -6,10 +6,10 @@
     <h1>{{data.message}}</h1>
 
     <fieldset>
-        <legend>Abecedario</legend>
-        <form>
+        <legend>Generar Abecedario</legend>
+        <div>
             <label for="rdAbecedario26">26 letras:</label>
-            <input type="radio" id="rdAbecedario26" name="rdAbecedario">
+            <input type="radio" id="rdAbecedario26" name="rdAbecedario" checked>
             <label for="rdAbecedario27">27 letras:</label>
             <input type="radio" id="rdAbecedario27" name="rdAbecedario">
             <br><br>
@@ -23,71 +23,97 @@
             <label for="txtPalabraClave">Palabra clave:</label>
             <input type="text" id="txtPalabraClave" name="txtPalabraClave">
             <br><br>
-            <button id="btnGenerar">Generar Abecedario</button>
-            <p id="resultado"></p>
-        </form>
+            <button onclick="generar()">Generar Abecedario</button>
+        </div>
     </fieldset>
+    
+    <p id="resultado"></p>
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th colspan="{{ data.abecedarioBase|length }}">ABECEDARIO</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                {% for letra in data.abecedarioBase %}                
-                    <td>{{ letra }}</td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table>
-    <br><br>
-    <table border="1">
-        <thead>
-            <tr>
-                <th colspan="{{ data.abecedarioBase|length }}">ABECEDARIO GENERADO</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                {% for letra in data.abecedarioGenerado %}                
-                    <td>{{ letra }}</td>
-                {% endfor %}
-            </tr>
-        </tbody>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="{{ data.abecedarioBase|length }}">ABECEDARIO ORIGINAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for letra in data.abecedarioBase %}                
+                        <td>{{ letra }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <br><br>
+        <table id="tablaGenerada" style="display: none;">
+            <thead>
+                <tr>
+                    <th id="tituloTabla"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="filaAbecedario"></tr>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 
+{% block scripts %}
+    <script>
+        function generar() {
 
-<script>
-    document.getElementById("btnGenerar").addEventListener("click", () => {
-       fetch('/generar', {
-            method: 'POST'
-            /*headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                abecedario: document.querySelector('input[name="rdAbecedario"]:checked')?.id,
-                inverso: document.getElementById("chkInverso").checked,
-                alfanumerico: document.getElementById("chkAlfanumerico").checked,
-                letraInicial: document.getElementById("txtLetraInicial").value,
-                palabraClave: document.getElementById("txtPalabraClave").value
-            })*/
-        })
-        .then(response => response.json())
-        .then(data => {
-             document.getElementById("resultado").textContent = data.mensaje;
-            // Actualizar la tabla con el abecedario generado
-            /*const tbody = document.querySelector('table:nth-of-type(2) tbody');
-            tbody.innerHTML = '';
-            const row = document.createElement('tr');
-            data.abecedarioGenerado.forEach(letra => {
-                const cell = document.createElement('td');
-                cell.textContent = letra;
-                row.appendChild(cell);
+            var letraInicial = document.getElementById("txtLetraInicial").value;
+            var palabraClave = document.getElementById("txtPalabraClave").value;
+            var inverso = document.getElementById("chkInverso").checked;
+            var alfanumerico = document.getElementById("chkAlfanumerico").checked;
+            var cantidad_letras = document.getElementById("rdAbecedario27").checked ? 27 : 26;
+
+            fetch("/generar", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    letraInicial: letraInicial,
+                    palabraClave: palabraClave,
+                    inverso: inverso,
+                    alfanumerico: alfanumerico,
+                    cantidad_letras: cantidad_letras
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                //document.getElementById("resultado").innerText = data.abecedario_generado;
+
+                // Actualizar la tabla con el abecedario generado
+                var filaAbecedario = document.getElementById("filaAbecedario");
+                filaAbecedario.innerHTML = "";
+
+                var tituloTabla = document.getElementById("tituloTabla");
+                if (data.abecedario_generado.length > 0) {
+                    tituloTabla.colSpan = data.abecedario_generado.length;
+                    tituloTabla.innerText = "ABECEDARIO GENERADO";
+                    for (var i = 0; i < data.abecedario_generado.length; i++) {
+                        var td = document.createElement("td");
+                        td.innerText = data.abecedario_generado[i];
+                        filaAbecedario.appendChild(td);
+                    }
+
+                    document.getElementById("tablaGenerada").style.display = "table";
+                } else {
+                    tituloTabla.innerText = "";
+                }
+
+
+
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("resultado").innerText = "Error al generar el abecedario.";
             });
-            tbody.appendChild(row);*/
-        })
-        .catch(error => console.error('Error:', error));
-    });
-</script>
+        }
+    </script>    
+{% endblock %}
