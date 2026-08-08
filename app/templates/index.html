@@ -5,22 +5,22 @@
 {% block body %}
     <h1>{{data.message}}</h1>
 
-    <fieldset>
-        <legend>Generar Abecedario</legend>
+    <fieldset class="grupo-cifrado">
+        
         <div>
-            <label for="rdAbecedario26">26 letras:</label>
+            <label>26 letras:</label>
             <input type="radio" id="rdAbecedario26" name="rdAbecedario" checked>
-            <label for="rdAbecedario27">27 letras:</label>
+            <label>27 letras:</label>
             <input type="radio" id="rdAbecedario27" name="rdAbecedario">
             <br><br>
-            <label for="chkInverso">Inverso:</label>
+            <label>Inverso:</label>
             <input type="checkbox" id="chkInverso" name="chkInverso">
-            <label for="chkAlfanumerico">Alfanumerico:</label>
+            <label>Alfanumerico:</label>
             <input type="checkbox" id="chkAlfanumerico" name="chkAlfanumerico">
             <br><br>
-            <label for="txtLetraInicial">Iniciar desde:</label>
+            <label>Iniciar desde:</label>
             <input type="text" id="txtLetraInicial" name="txtLetraInicial">
-            <label for="txtPalabraClave">Palabra clave:</label>
+            <label>Palabra clave:</label>
             <input type="text" id="txtPalabraClave" name="txtPalabraClave">
             <br><br>
             <button onclick="generar()">Generar Abecedario</button>
@@ -59,10 +59,34 @@
             </tbody>
         </table>
     </div>
+
+    <div id="divVariables" style="display: none;">
+        <input type="text" id="txtTrasposicion" name="txtTrasposicion">
+        <button onclick="generarTrasposicion()">Trasposicion</button>
+        <input type="text" id="txtTrama" name="txtTrama">
+        <button onclick="generarTrama()">Trama</button>
+    </div>
+
+    <div>
+        <br><br>
+        <table id="tablaTrasposicion" style="display: none;">
+            <thead>
+                <tr>
+                    <th id="tituloTablaTrasposicion"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="filaTablaTrasposicion"></tr>
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}
 
 {% block scripts %}
     <script>
+        let abecedarioBase;
+
         function generar() {
 
             var letraInicial = document.getElementById("txtLetraInicial").value;
@@ -86,7 +110,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                //document.getElementById("resultado").innerText = data.abecedario_generado;
+
+                abecedarioBase = data.abecedario_generado;
 
                 // Actualizar la tabla con el abecedario generado
                 var filaAbecedario = document.getElementById("filaAbecedario");
@@ -103,16 +128,54 @@
                     }
 
                     document.getElementById("tablaGenerada").style.display = "table";
+                    document.getElementById("divVariables").style.display = "inline";
                 } else {
-                    tituloTabla.innerText = "";
+                    tituloTabla.innerText = "No se generó ningún abecedario";
                 }
-
-
-
             })
             .catch(error => {
                 console.error("Error:", error);
                 document.getElementById("resultado").innerText = "Error al generar el abecedario.";
+            });
+        }
+
+        function generarTrasposicion() {
+            var trasposicion = document.getElementById("txtTrasposicion").value;
+
+            fetch("/generarTrasposicion", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    trasposicion: trasposicion,
+                    abecedario: abecedarioBase
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar la tabla con el abecedario generado
+                var filaAbecedario = document.getElementById("filaTablaTrasposicion");
+                filaAbecedario.innerHTML = "";
+
+                var tituloTabla = document.getElementById("tituloTablaTrasposicion");
+                if (data.abecedario_generado.length > 0) {
+                    tituloTabla.colSpan = data.abecedario_generado.length;
+                    tituloTabla.innerText = "ABECEDARIO TRASPOSICION GENERADO";
+                    for (var i = 0; i < data.abecedario_generado.length; i++) {
+                        var td = document.createElement("td");
+                        td.innerText = data.abecedario_generado[i];
+                        filaAbecedario.appendChild(td);
+                    }
+
+                    document.getElementById("tablaTrasposicion").style.display = "table";
+                } else {
+                    tituloTabla.innerText = "No se generó ningún abecedario";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("resultado").innerText = "Error al generar la trasposición.";
             });
         }
     </script>    
