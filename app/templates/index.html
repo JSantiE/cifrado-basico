@@ -47,7 +47,6 @@
     </div>
 
     <div>
-        <br><br>
         <table id="tablaGenerada" style="display: none;">
             <thead>
                 <tr>
@@ -68,7 +67,6 @@
     </div>
 
     <div>
-        <br><br>
         <table id="tablaTrasposicion" style="display: none;">
             <thead>
                 <tr>
@@ -158,6 +156,9 @@
                 var filaAbecedario = document.getElementById("filaTablaTrasposicion");
                 filaAbecedario.innerHTML = "";
 
+                const tablaGenerada = document.getElementById("tablaGenerada");
+                const nuevaFila = tablaGenerada.insertRow();
+
                 var tituloTabla = document.getElementById("tituloTablaTrasposicion");
                 if (data.abecedario_generado.length > 0) {
                     tituloTabla.colSpan = data.abecedario_generado.length;
@@ -166,6 +167,11 @@
                         var td = document.createElement("td");
                         td.innerText = data.abecedario_generado[i];
                         filaAbecedario.appendChild(td);
+
+                        if(tablaGenerada.rows.length == 3){
+                            const celda = nuevaFila.insertCell();
+                            celda.innerText = data.abecedario_explicativo[i].id;
+                        }                        
                     }
 
                     document.getElementById("tablaTrasposicion").style.display = "table";
