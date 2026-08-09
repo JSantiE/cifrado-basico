@@ -33,7 +33,6 @@ def generar():
 def generarTrasposicion():
     req = request.get_json()
     
-    #abecedario = "POÑNMLKJZYDCBAQIHGFEXWVUTSR"
     trasposicion = req.get("trasposicion")
     abecedario = list(req.get("abecedario"))
     
@@ -48,9 +47,15 @@ def generarTrasposicion():
         
         tblTrasposicion.extend(fila)
     
-    print("Datos recibidos:", tblTrasposicion)
+    tblAbecedario = []
     
-    res = make_response(jsonify({"abecedario_generado": list(tblTrasposicion)}), 200)
+    for i, letra in enumerate(abecedario):
+        tblAbecedario.append({
+            "id": trasposicion[i%len(trasposicion)],
+            "letra": letra
+            })
+    
+    res = make_response(jsonify({"abecedario_generado": list(tblTrasposicion), "abecedario_explicativo": list(tblAbecedario)}), 200)
     
     return res
 
