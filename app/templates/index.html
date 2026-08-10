@@ -79,6 +79,19 @@
         </table>
     </div>
 
+    <div>
+        <table id="tablaTrama" style="display: none;">
+            <thead>
+                <tr>
+                    <th id="tituloTablaTrama"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="filaTablaTrama"></tr>
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -182,6 +195,54 @@
             .catch(error => {
                 console.error("Error:", error);
                 document.getElementById("resultado").innerText = "Error al generar la trasposición.";
+            });
+        }
+
+        function generarTrama() {
+            var trama = document.getElementById("txtTrama").value;
+
+            fetch("/generarTrama", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    trama: trama,
+                    abecedario: abecedarioBase
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar la tabla con el abecedario generado
+                var filaAbecedario = document.getElementById("filaTablaTrama");
+                filaAbecedario.innerHTML = "";
+
+                const tablaGenerada = document.getElementById("tablaGenerada");
+                const nuevaFila = tablaGenerada.insertRow();
+
+                var tituloTabla = document.getElementById("tituloTablaTrama");
+                if (data.abecedario_generado.length > 0) {
+                    tituloTabla.colSpan = data.abecedario_generado.length;
+                    tituloTabla.innerText = "ABECEDARIO TRAMA GENERADO";
+                    for (var i = 0; i < data.abecedario_generado.length; i++) {
+                        var td = document.createElement("td");
+                        td.innerText = data.abecedario_generado[i].trama;
+                        filaAbecedario.appendChild(td);
+
+                        if(tablaGenerada.rows.length == 3){
+                            const celda = nuevaFila.insertCell();
+                            celda.innerText = data.abecedario_explicativo[i].id;
+                        }                        
+                    }
+
+                    document.getElementById("tablaTrama").style.display = "table";
+                } else {
+                    tituloTabla.innerText = "No se generó ningún abecedario";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("resultado").innerText = "Error al generar la trama.";
             });
         }
     </script>    
