@@ -54,6 +54,45 @@ def generarTrama():
     res = make_response(jsonify({"abecedario_generado": list(tblTrama), "abecedario_explicativo": list(tblAbecedario)}), 200)    
     return res
 
+@app.route("/generarClaveNumerica", methods=["POST"])
+def generarClaveNumerica():
+    req = request.get_json()
+    
+    claveNumerica = req.get("claveNumerica")
+    abecedario = list(req.get("abecedario"))
+    
+    columnas = list(claveNumerica)
+    
+    tblAbecedario = []
+    
+    for i in range(0, len(abecedario), len(columnas)):
+        fila = []
+
+        for j in range(len(columnas)):
+            posicion = i + j
+
+            if posicion < len(abecedario):
+                fila.append(abecedario[posicion])
+            else:
+                fila.append("")
+
+        tblAbecedario.append(fila)
+    
+    tblClaveNumerica = []
+
+    for numero in sorted(columnas, key=int):
+
+        indice_columna = columnas.index(numero)
+
+        for fila in tblAbecedario:
+
+            if fila[indice_columna] != "":
+                tblClaveNumerica.append(fila[indice_columna])
+
+
+    res = make_response(jsonify({"abecedario_generado": list(tblClaveNumerica), "abecedario_explicativo": list(tblAbecedario), "columnas": columnas}), 200)
+    return res
+
 def generar_abecedario(cantidad_letras, alfanumerico, inverso, letraInicial, palabraClave):
     abecedario_generado = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     
