@@ -54,7 +54,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr id="filaAbecedario"></tr>
+                <tr id="filaAbecedario">
+                </tr>
             </tbody>
         </table>
     </div>
@@ -64,6 +65,8 @@
         <button onclick="generarTrasposicion()">Trasposicion</button>
         <input type="text" id="txtTrama" name="txtTrama">
         <button onclick="generarTrama()">Trama</button>
+        <input type="text" id="txtClaveNumerica" name="txtClaveNumerica">
+        <button onclick="generarClaveNumerica()">Clave Numerica</button>
     </div>
 
     <div>
@@ -88,6 +91,27 @@
             </thead>
             <tbody>
                 <tr id="filaTablaTrama"></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+        <table id="tablaClaveNumericaExplicativa" style="display: none;">
+            <thead>
+                
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        <table id="tablaClaveNumerica" style="display: none;">
+            <thead>
+                <tr>
+                    <th id="tituloTablaClaveNumerica"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="filaTablaClaveNumerica"></tr>
             </tbody>
         </table>
     </div>
@@ -181,7 +205,7 @@
                         td.innerText = data.abecedario_generado[i];
                         filaAbecedario.appendChild(td);
 
-                        if(tablaGenerada.rows.length == 3){
+                        if(tablaGenerada.rows.length <= 4){
                             const celda = nuevaFila.insertCell();
                             celda.innerText = data.abecedario_explicativo[i].id;
                         }                        
@@ -229,7 +253,7 @@
                         td.innerText = data.abecedario_generado[i].trama;
                         filaAbecedario.appendChild(td);
 
-                        if(tablaGenerada.rows.length == 3){
+                        if(tablaGenerada.rows.length <= 4){
                             const celda = nuevaFila.insertCell();
                             celda.innerText = data.abecedario_explicativo[i].id;
                         }                        
@@ -244,6 +268,85 @@
                 console.error("Error:", error);
                 document.getElementById("resultado").innerText = "Error al generar la trama.";
             });
+        }
+
+        function generarClaveNumerica() {
+            var claveNumerica = document.getElementById("txtClaveNumerica").value;
+
+            fetch("/generarClaveNumerica", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    claveNumerica: claveNumerica,
+                    abecedario: abecedarioBase
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar la tabla con el abecedario generado
+                var filaAbecedario = document.getElementById("filaTablaClaveNumerica");
+                filaAbecedario.innerHTML = "";
+
+                var tituloTabla = document.getElementById("tituloTablaClaveNumerica");
+                if (data.abecedario_generado.length > 0) {
+                    tituloTabla.colSpan = data.abecedario_generado.length;
+                    tituloTabla.innerText = "ABECEDARIO CLAVE NUMERICA GENERADO";
+                    for (var i = 0; i < data.abecedario_generado.length; i++) {
+                        var td = document.createElement("td");
+                        td.innerText = data.abecedario_generado[i];
+                        filaAbecedario.appendChild(td);
+                    }
+
+                    document.getElementById("tablaClaveNumerica").style.display = "table";
+                } else {
+                    tituloTabla.innerText = "No se generó ningún abecedario";
+                }
+
+                mostrarTabla(data.columnas, data.abecedario_explicativo)
+                document.getElementById("tablaClaveNumericaExplicativa").style.display = "table";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("resultado").innerText = "Error al generar la trama.";
+            });
+        }
+
+        function mostrarTabla(columnas, tabla){
+            const tablaHTML = document.getElementById("tablaClaveNumericaExplicativa");
+            const thead = tablaHTML.querySelector("thead");
+            const tbody = tablaHTML.querySelector("tbody");
+
+            thead.innerHTML = "";
+            tbody.innerHTML = "";
+
+            const filaEncabezado = document.createElement("tr");
+
+            columnas.forEach(numero => {
+                const th = document.createElement("th");
+
+                th.textContent = numero;
+
+                filaEncabezado.appendChild(th);
+            });
+
+            thead.appendChild(filaEncabezado);
+
+            tabla.forEach(fila => {
+                const tr = document.createElement("tr");
+
+                fila.forEach(letra => {
+                    const td = document.createElement("td");
+
+                    td.textContent = letra;
+
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            });
+
         }
     </script>    
 {% endblock %}
