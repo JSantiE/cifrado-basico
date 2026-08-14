@@ -122,56 +122,96 @@
     <script>
         let abecedarioBase;
 
-        function generar() {
+        function generar(){
+            const datos = obtenerDatosFormulario();
 
-            var letraInicial = document.getElementById("txtLetraInicial").value;
-            var palabraClave = document.getElementById("txtPalabraClave").value;
-            var inverso = document.getElementById("chkInverso").checked;
-            var alfanumerico = document.getElementById("chkAlfanumerico").checked;
-            var cantidad_letras = document.getElementById("rdAbecedario27").checked ? 27 : 26;
+            enviarGeneracion(datos)
+                .then(data => {
+                    procesarResultado(data);
+                })
+                .catch(error => {
+                    mostrarError(error);
+                });
+        }
 
-            fetch("/generar", {
+        function obtenerDatosFormulario(){
+            return {
+                letraInicial: document.getElementById("txtLetraInicial").value,
+                palabraClave: document.getElementById("txtPalabraClave").value,
+                inverso: document.getElementById("chkInverso").checked,
+                alfanumerico: document.getElementById("chkAlfanumerico").checked,
+                cantidad_letras: document.getElementById("rdAbecedario27").checked
+                    ? 27
+                    : 26
+            }
+        }
+
+        function enviarGeneracion(datos){
+
+            return fetch("/generar", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    letraInicial: letraInicial,
-                    palabraClave: palabraClave,
-                    inverso: inverso,
-                    alfanumerico: alfanumerico,
-                    cantidad_letras: cantidad_letras
-                })
+                body: JSON.stringify(datos)
             })
-            .then(response => response.json())
-            .then(data => {
-
-                abecedarioBase = data.abecedario_generado;
-
-                // Actualizar la tabla con el abecedario generado
-                var filaAbecedario = document.getElementById("filaAbecedario");
-                filaAbecedario.innerHTML = "";
-
-                var tituloTabla = document.getElementById("tituloTabla");
-                if (data.abecedario_generado.length > 0) {
-                    tituloTabla.colSpan = data.abecedario_generado.length;
-                    tituloTabla.innerText = "ABECEDARIO GENERADO";
-                    for (var i = 0; i < data.abecedario_generado.length; i++) {
-                        var td = document.createElement("td");
-                        td.innerText = data.abecedario_generado[i];
-                        filaAbecedario.appendChild(td);
-                    }
-
-                    document.getElementById("tablaGenerada").style.display = "table";
-                    document.getElementById("divVariables").style.display = "inline";
-                } else {
-                    tituloTabla.innerText = "No se generó ningún abecedario";
+            .then(response => {
+                if(!response.ok){
+                    throw new Error("Error en la respuesta del servidor");
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("resultado").innerText = "Error al generar el abecedario.";
+
+                return response.json();
             });
+        }
+
+        function procesarResultado(data){
+            abecedarioBase = data.abecedario_generado;
+            actualizarTabla(data.abecedario_generado);
+
+            if(data.abecedario_generado.length > 0){
+                mostrarElementosGenerados();
+            }else{
+                mostrarMensajeSinResultado();
+            }
+        }
+
+        function actualizarTabla(abecedario) {
+
+            const filaAbecedario = document.getElementById("filaAbecedario");
+            const tituloTabla = document.getElementById("tituloTabla");
+
+            filaAbecedario.innerHTML = "";
+
+            if (abecedario.length === 0) {
+                return;
+            }
+
+            tituloTabla.colSpan = abecedario.length;
+            tituloTabla.innerText = "ABECEDARIO GENERADO";
+
+            for (let letra of abecedario) {
+
+                const td = document.createElement("td");
+
+                td.innerText = letra;
+
+                filaAbecedario.appendChild(td);
+            }
+        }
+
+        function mostrarElementosGenerados() {
+            document.getElementById("tablaGenerada").style.display = "table";
+            document.getElementById("divVariables").style.display = "inline";
+        }
+
+        function mostrarMensajeSinResultado() {
+            document.getElementById("tituloTabla").innerText = "No se generó ningún abecedario";
+        }
+
+        function mostrarError(error) {
+
+            console.error("Error:", error);
+            document.getElementById("resultado").innerText = "Error al generar el abecedario.";
         }
 
         function generarTrasposicion() {
