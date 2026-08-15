@@ -122,6 +122,46 @@
     <script>
         let abecedarioBase;
 
+        /* =========================================================
+            FUNCIONES GENERALES
+        ========================================================= */
+
+        function mostrarError(mensaje, error) {
+            console.error("Error:", error);
+            document.getElementById("resultado").innerText = mensaje;
+        }
+
+        function mostrarMensajeSinResultado(idTitulo, mensaje) {
+            document.getElementById(idTitulo).innerText = mensaje;
+        }
+
+        function agregarCeldas(fila, datos) {
+            for (const dato of datos) {
+                const celda = fila.insertCell();
+                celda.innerText = dato;
+            }
+        }
+
+        function renderizarTabla(idFila, idTitulo, titulo, datos) {
+
+            const fila = document.getElementById(idFila);
+            const tituloTabla = document.getElementById(idTitulo);
+
+            fila.innerHTML = "";
+            tituloTabla.colSpan = datos.length;
+            tituloTabla.innerText = titulo;
+
+            for (const dato of datos) {
+                const celda = document.createElement("td");
+                celda.innerText = dato;
+                fila.appendChild(celda);
+            }
+        }
+
+        /* =========================================================
+            GENERAR ABECEDARIO
+        ========================================================= */
+
         function generar(){
             const datos = obtenerDatosFormulario();
 
@@ -130,7 +170,7 @@
                     procesarResultado(data);
                 })
                 .catch(error => {
-                    mostrarError(error);
+                    mostrarError("Error al generar el abecedario.", error);
                 });
         }
 
@@ -166,191 +206,196 @@
 
         function procesarResultado(data){
             abecedarioBase = data.abecedario_generado;
-            actualizarTabla(data.abecedario_generado);
 
-            if(data.abecedario_generado.length > 0){
-                mostrarElementosGenerados();
-            }else{
-                mostrarMensajeSinResultado();
-            }
-        }
-
-        function actualizarTabla(abecedario) {
-
-            const filaAbecedario = document.getElementById("filaAbecedario");
-            const tituloTabla = document.getElementById("tituloTabla");
-
-            filaAbecedario.innerHTML = "";
-
-            if (abecedario.length === 0) {
+            if (abecedarioBase.length === 0) {
+                mostrarMensajeSinResultado("tituloTabla", "No se generó ningún abecedario");
                 return;
             }
 
-            tituloTabla.colSpan = abecedario.length;
-            tituloTabla.innerText = "ABECEDARIO GENERADO";
-
-            for (let letra of abecedario) {
-
-                const td = document.createElement("td");
-
-                td.innerText = letra;
-
-                filaAbecedario.appendChild(td);
-            }
-        }
-
-        function mostrarElementosGenerados() {
+            renderizarTabla("filaAbecedario", "tituloTabla", "ABECEDARIO GENERADO", abecedarioBase);
+            
             document.getElementById("tablaGenerada").style.display = "table";
             document.getElementById("divVariables").style.display = "inline";
         }
 
-        function mostrarMensajeSinResultado() {
-            document.getElementById("tituloTabla").innerText = "No se generó ningún abecedario";
+        /* =========================================================
+            GENERAR TRASPOSICION
+        ========================================================= */
+
+        function generarTrasposicion(){
+            const datos = obtenerDatosTrasposicion();
+
+            enviarTrasposicion(datos)
+                .then(data => {
+                    procesarTrasposicion(data);
+                })
+                .catch(error => {
+                    mostrarError("Error al generar la trasposición.", error);
+                });
         }
 
-        function mostrarError(error) {
-
-            console.error("Error:", error);
-            document.getElementById("resultado").innerText = "Error al generar el abecedario.";
+        function obtenerDatosTrasposicion(){
+            return {
+                trasposicion: document.getElementById("txtTrasposicion").value,
+                abecedario: abecedarioBase
+            };        
         }
 
-        function generarTrasposicion() {
-            var trasposicion = document.getElementById("txtTrasposicion").value;
+        function enviarTrasposicion(datos) {
 
-            fetch("/generarTrasposicion", {
+            return fetch("/generarTrasposicion", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    trasposicion: trasposicion,
-                    abecedario: abecedarioBase
-                })
+                body: JSON.stringify(datos)
             })
-            .then(response => response.json())
-            .then(data => {
-                // Actualizar la tabla con el abecedario generado
-                var filaAbecedario = document.getElementById("filaTablaTrasposicion");
-                filaAbecedario.innerHTML = "";
-
-                const tablaGenerada = document.getElementById("tablaGenerada");
-                const nuevaFila = tablaGenerada.insertRow();
-
-                var tituloTabla = document.getElementById("tituloTablaTrasposicion");
-                if (data.abecedario_generado.length > 0) {
-                    tituloTabla.colSpan = data.abecedario_generado.length;
-                    tituloTabla.innerText = "ABECEDARIO TRASPOSICION GENERADO";
-                    for (var i = 0; i < data.abecedario_generado.length; i++) {
-                        var td = document.createElement("td");
-                        td.innerText = data.abecedario_generado[i];
-                        filaAbecedario.appendChild(td);
-
-                        if(tablaGenerada.rows.length <= 4){
-                            const celda = nuevaFila.insertCell();
-                            celda.innerText = data.abecedario_explicativo[i].id;
-                        }                        
-                    }
-
-                    document.getElementById("tablaTrasposicion").style.display = "table";
-                } else {
-                    tituloTabla.innerText = "No se generó ningún abecedario";
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("resultado").innerText = "Error al generar la trasposición.";
+
+                return response.json();
             });
         }
 
-        function generarTrama() {
-            var trama = document.getElementById("txtTrama").value;
+        function procesarTrasposicion(data) {
 
-            fetch("/generarTrama", {
+            if (data.abecedario_generado.length === 0) {
+                mostrarMensajeSinResultado("tituloTablaTrasposicion", "No se generó ningún abecedario");
+                return;
+            }
+
+            renderizarTabla("filaTablaTrasposicion", "tituloTablaTrasposicion", "ABECEDARIO TRASPOSICION GENERADO", data.abecedario_generado);
+            actualizarTablaExplicativa(data.abecedario_explicativo);
+
+            document.getElementById("tablaTrasposicion").style.display = "table";
+        }
+
+        function actualizarTablaExplicativa(datos) {
+
+            const tabla = document.getElementById("tablaGenerada");
+            let fila = document.getElementById("filaTrasposicion");
+
+            // Crear la fila solamente si todavía no existe
+            if (!fila) {
+                fila = tabla.insertRow();
+                fila.id = "filaTrasposicion";
+            }
+            else {
+                fila.innerHTML = "";
+            }
+
+            agregarCeldas(fila, datos.map(elemento => elemento.id));
+        }
+
+        /* =========================================================
+            GENERAR TRAMA
+        ========================================================= */
+
+        function generarTrama(){
+            const datos = obtenerDatosTrama();
+
+            enviarTrama(datos)
+                .then(data => {
+                    procesarTrama(data);
+                })
+                .catch(error => {
+                    mostrarError("Error al generar la trama.", error);
+                });
+        }
+
+        function obtenerDatosTrama(){
+            return {
+                trama: document.getElementById("txtTrama").value,
+                abecedario: abecedarioBase
+            };        
+        }
+
+        function enviarTrama(datos) {
+
+            return fetch("/generarTrama", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    trama: trama,
-                    abecedario: abecedarioBase
-                })
+                body: JSON.stringify(datos)
             })
-            .then(response => response.json())
-            .then(data => {
-                // Actualizar la tabla con el abecedario generado
-                var filaAbecedario = document.getElementById("filaTablaTrama");
-                filaAbecedario.innerHTML = "";
-
-                const tablaGenerada = document.getElementById("tablaGenerada");
-                const nuevaFila = tablaGenerada.insertRow();
-
-                var tituloTabla = document.getElementById("tituloTablaTrama");
-                if (data.abecedario_generado.length > 0) {
-                    tituloTabla.colSpan = data.abecedario_generado.length;
-                    tituloTabla.innerText = "ABECEDARIO TRAMA GENERADO";
-                    for (var i = 0; i < data.abecedario_generado.length; i++) {
-                        var td = document.createElement("td");
-                        td.innerText = data.abecedario_generado[i].trama;
-                        filaAbecedario.appendChild(td);
-
-                        if(tablaGenerada.rows.length <= 4){
-                            const celda = nuevaFila.insertCell();
-                            celda.innerText = data.abecedario_explicativo[i].id;
-                        }                        
-                    }
-
-                    document.getElementById("tablaTrama").style.display = "table";
-                } else {
-                    tituloTabla.innerText = "No se generó ningún abecedario";
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
                 }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("resultado").innerText = "Error al generar la trama.";
+
+                return response.json();
             });
         }
 
-        function generarClaveNumerica() {
-            var claveNumerica = document.getElementById("txtClaveNumerica").value;
+        function procesarTrama(data) {
 
-            fetch("/generarClaveNumerica", {
+            if (data.abecedario_generado.length === 0) {
+                mostrarMensajeSinResultado("tituloTablaTrama", "No se generó ningún abecedario");
+                return;
+            }
+
+            renderizarTabla("filaTablaTrama", "tituloTablaTrama", "ABECEDARIO TRAMA GENERADO", data.abecedario_generado);
+            actualizarTablaExplicativa(data.abecedario_explicativo);
+
+            document.getElementById("tablaTrama").style.display = "table";
+        }
+
+        /* =========================================================
+            GENERAR CLAVE NUMERICA
+        ========================================================= */
+
+        function generarClaveNumerica(){
+            const datos = obtenerDatosClaveNumerica();
+
+            enviarClaveNumerica(datos)
+                .then(data => {
+                    procesarClaveNumerica(data);
+                })
+                .catch(error => {
+                    mostrarError("Error al generar la trama.", error);
+                });
+        }
+
+        function obtenerDatosClaveNumerica(){
+            return {
+                claveNumerica: document.getElementById("txtClaveNumerica").value,
+                abecedario: abecedarioBase
+            };        
+        }
+
+        function enviarClaveNumerica(datos) {
+
+            return fetch("/generarClaveNumerica", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    claveNumerica: claveNumerica,
-                    abecedario: abecedarioBase
-                })
+                body: JSON.stringify(datos)
             })
-            .then(response => response.json())
-            .then(data => {
-                // Actualizar la tabla con el abecedario generado
-                var filaAbecedario = document.getElementById("filaTablaClaveNumerica");
-                filaAbecedario.innerHTML = "";
-
-                var tituloTabla = document.getElementById("tituloTablaClaveNumerica");
-                if (data.abecedario_generado.length > 0) {
-                    tituloTabla.colSpan = data.abecedario_generado.length;
-                    tituloTabla.innerText = "ABECEDARIO CLAVE NUMERICA GENERADO";
-                    for (var i = 0; i < data.abecedario_generado.length; i++) {
-                        var td = document.createElement("td");
-                        td.innerText = data.abecedario_generado[i];
-                        filaAbecedario.appendChild(td);
-                    }
-
-                    document.getElementById("tablaClaveNumerica").style.display = "table";
-                } else {
-                    tituloTabla.innerText = "No se generó ningún abecedario";
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
                 }
 
-                mostrarTabla(data.columnas, data.abecedario_explicativo)
-                document.getElementById("tablaClaveNumericaExplicativa").style.display = "table";
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                document.getElementById("resultado").innerText = "Error al generar la trama.";
+                return response.json();
             });
+        }
+
+        function procesarClaveNumerica(data) {
+
+            if (data.abecedario_generado.length === 0) {
+                mostrarMensajeSinResultado("tituloTablaClaveNumerica", "No se generó ningún abecedario");
+                return;
+            }
+
+            renderizarTabla("filaTablaClaveNumerica", "tituloTablaClaveNumerica", "ABECEDARIO CLAVE NUMERICA GENERADO", data.abecedario_generado);
+            mostrarTabla(data.columnas, data.abecedario_explicativo);
+
+            document.getElementById("tablaClaveNumerica").style.display = "table";
+            document.getElementById("tablaClaveNumericaExplicativa").style.display = "table";
         }
 
         function mostrarTabla(columnas, tabla){
@@ -388,5 +433,6 @@
             });
 
         }
+
     </script>    
 {% endblock %}
