@@ -60,7 +60,7 @@ def generarTrama():
     tblAbecedario = generar_tabla_trama(abecedario, trama)
     tblTrama = generar_tabla_trama_ordenada(tblAbecedario, trama)
 
-    res = make_response(jsonify({"abecedario_generado": list(tblTrama), "abecedario_explicativo": list(tblAbecedario)}), 200)    
+    res = make_response(jsonify({"abecedario_generado": [fila["trama"] for fila in tblTrama], "abecedario_explicativo": list(tblAbecedario)}), 200)    
     return res
 
 @app.route("/generarClaveNumerica", methods=["POST"])
