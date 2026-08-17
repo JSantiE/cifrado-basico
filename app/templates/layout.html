@@ -9,6 +9,10 @@
 <body>
     {% block body %}{% endblock %}
     <script src='{{ url_for('static', filename='js/layout.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/abecedario.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/trasposicion.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/trama.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/claveNumerica.js') }}'></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
