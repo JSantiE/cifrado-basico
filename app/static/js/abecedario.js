@@ -30,12 +30,12 @@ function procesarResultado(data){
     abecedarioBase = data.abecedario_generado;
 
     if (abecedarioBase.length === 0) {
-        mostrarMensajeSinResultado("tituloTabla", "No se generó ningún abecedario");
+        mostrarMensajeSinResultado("tituloAbecedario", "No se generó ningún abecedario");
         return;
     }
 
-    renderizarTabla("filaAbecedario", "tituloTabla", "ABECEDARIO GENERADO", abecedarioBase);
+    renderizarTabla("filaAbecedario", "tituloAbecedario", "ABECEDARIO GENERADO", abecedarioBase);
     
-    document.getElementById("tablaGenerada").style.display = "table";
-    document.getElementById("divVariables").style.display = "inline";
+    document.getElementById("tablaAbecedario").style.display = "table";
+    document.getElementById("divVariables").style.display = "flex";
 }

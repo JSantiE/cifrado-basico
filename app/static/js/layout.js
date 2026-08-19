@@ -55,7 +55,7 @@ function renderizarTabla(idFila, idTitulo, titulo, datos) {
 
 function actualizarTablaExplicativa(datos) {
 
-    const tabla = document.getElementById("tablaGenerada");
+    const tabla = document.getElementById("tablaAbecedario");
     let fila = document.getElementById("filaTrasposicion");
 
     // Crear la fila solamente si todavía no existe
