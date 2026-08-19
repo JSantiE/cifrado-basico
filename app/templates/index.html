@@ -6,27 +6,39 @@
     <h1>{{data.message}}</h1>
 
     <fieldset class="grupo-cifrado">
-        
-        <div>
-            <label>26 letras:</label>
-            <input type="radio" id="rdAbecedario26" name="rdAbecedario" checked>
-            <label>27 letras:</label>
-            <input type="radio" id="rdAbecedario27" name="rdAbecedario">
-            <br><br>
-            <label>Inverso:</label>
-            <input type="checkbox" id="chkInverso" name="chkInverso">
-            <label>Alfanumerico:</label>
-            <input type="checkbox" id="chkAlfanumerico" name="chkAlfanumerico">
-            <br><br>
-            <label>Iniciar desde:</label>
-            <input type="text" id="txtLetraInicial" name="txtLetraInicial">
-            <label>Palabra clave:</label>
-            <input type="text" id="txtPalabraClave" name="txtPalabraClave">
-            <br><br>
-            <button onclick="generar()">Generar Abecedario</button>
+        <legend>Parametros</legend>
+
+        <div class="fieldset-grid">
+            <div class="form-group">
+                <label>26 letras:</label>
+                <input type="radio" id="rdAbecedario26" name="rdAbecedario" checked>
+            </div>
+            <div class="form-group">
+                <label>27 letras:</label>
+                <input type="radio" id="rdAbecedario27" name="rdAbecedario">
+            </div>
+            <div class="form-group">
+                <label>Inverso:</label>
+                <input type="checkbox" id="chkInverso" name="chkInverso">
+            </div>
+            <div class="form-group">
+                <label>Alfanumerico:</label>
+                <input type="checkbox" id="chkAlfanumerico" name="chkAlfanumerico">
+            </div>
+            <div class="form-group">
+                <label>Iniciar desde:</label>
+                <input type="text" id="txtLetraInicial" name="txtLetraInicial">
+            </div>
+            <div class="form-group">
+                <label>Palabra clave:</label>
+                <input type="text" id="txtPalabraClave" name="txtPalabraClave">
+            </div>
+            <div class="form-group full-width">
+                <button onclick="generar()">Generar Abecedario</button>
+            </div>            
         </div>
     </fieldset>
-    
+
     <p id="resultado"></p>
 
     <div>
@@ -44,13 +56,13 @@
                 </tr>
             </tbody>
         </table>
-    </div>
+    </div>   
 
     <div>
-        <table id="tablaGenerada" style="display: none;">
+        <table id="tablaAbecedario" style="display: none;">
             <thead>
                 <tr>
-                    <th id="tituloTabla"></th>
+                    <th id="tituloAbecedario"></th>
                 </tr>
             </thead>
             <tbody>
@@ -60,6 +72,11 @@
         </table>
     </div>
 
+    <div>
+        <input type="text" style="width: 100%; max-width: 600px;">
+        <button>Generar Trasposicion</button>
+    </div>
+
     <div id="divVariables" style="display: none;">
         <input type="text" id="txtTrasposicion" name="txtTrasposicion">
         <button onclick="generarTrasposicion()">Trasposicion</button>
@@ -67,6 +84,19 @@
         <button onclick="generarTrama()">Trama</button>
         <input type="text" id="txtClaveNumerica" name="txtClaveNumerica">
         <button onclick="generarClaveNumerica()">Clave Numerica</button>
+    </div>
+
+    <div>
+        <table id="tablaGenerada" style="display: none;">
+            <thead>
+                <tr>
+                    <th id="tituloTablaGenerada"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="filaTablaGenerada"></tr>
+            </tbody>
+        </table>
     </div>
 
     <div>
@@ -104,6 +134,7 @@
                 
             </tbody>
         </table>
+        <br>
         <table id="tablaClaveNumerica" style="display: none;">
             <thead>
                 <tr>
