@@ -16,7 +16,7 @@ function generarTrasposicion(){
 
 function obtenerDatosTrasposicion(){
     return {
-        trasposicion: document.getElementById("txtTrasposicion").value,
+        trasposicion: document.getElementById("txtCifrado").value,
         abecedario: abecedarioBase
     };        
 }
@@ -24,12 +24,13 @@ function obtenerDatosTrasposicion(){
 function procesarTrasposicion(data) {
 
     if (data.abecedario_generado.length === 0) {
-        mostrarMensajeSinResultado("tituloTablaTrasposicion", "No se generó ningún abecedario");
+        mostrarMensajeSinResultado("tituloTablaGenerada", "No se generó ningún abecedario");
         return;
     }
 
-    renderizarTabla("filaTablaTrasposicion", "tituloTablaTrasposicion", "ABECEDARIO TRASPOSICION GENERADO", data.abecedario_generado);
+    renderizarTabla("filaTablaGenerada", "tituloTablaGenerada", "ABECEDARIO TRASPOSICION GENERADO", data.abecedario_generado);
     actualizarTablaExplicativa(data.abecedario_explicativo);
 
-    document.getElementById("tablaTrasposicion").style.display = "table";
+    document.getElementById("tablaGenerada").style.display = "table";
+    document.getElementById("tablaClaveNumericaExplicativa").style.display = "none";
 }
