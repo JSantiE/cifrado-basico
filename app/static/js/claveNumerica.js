@@ -16,7 +16,7 @@ function generarClaveNumerica(){
 
 function obtenerDatosClaveNumerica(){
     return {
-        claveNumerica: document.getElementById("txtClaveNumerica").value,
+        claveNumerica: document.getElementById("txtCifrado").value,
         abecedario: abecedarioBase
     };        
 }
@@ -24,14 +24,14 @@ function obtenerDatosClaveNumerica(){
 function procesarClaveNumerica(data) {
 
     if (data.abecedario_generado.length === 0) {
-        mostrarMensajeSinResultado("tituloTablaClaveNumerica", "No se generó ningún abecedario");
+        mostrarMensajeSinResultado("tituloTablaGenerada", "No se generó ningún abecedario");
         return;
     }
 
-    renderizarTabla("filaTablaClaveNumerica", "tituloTablaClaveNumerica", "ABECEDARIO CLAVE NUMERICA GENERADO", data.abecedario_generado);
+    renderizarTabla("filaTablaGenerada", "tituloTablaGenerada", "ABECEDARIO CLAVE NUMERICA GENERADO", data.abecedario_generado);
     mostrarTabla(data.columnas, data.abecedario_explicativo);
 
-    document.getElementById("tablaClaveNumerica").style.display = "table";
+    document.getElementById("tablaGenerada").style.display = "table";
     document.getElementById("tablaClaveNumericaExplicativa").style.display = "table";
 }
 
