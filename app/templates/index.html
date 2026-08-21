@@ -5,60 +5,38 @@
 {% block body %}
     <h1>{{data.message}}</h1>
 
-    <fieldset class="grupo-cifrado">
+    <fieldset class="grupo-formulario">
         <legend>Parametros</legend>
 
-        <div class="fieldset-grid">
-            <div class="form-group">
-                <label>26 letras:</label>
-                <input type="radio" id="rdAbecedario26" name="rdAbecedario" checked>
-            </div>
-            <div class="form-group">
-                <label>27 letras:</label>
-                <input type="radio" id="rdAbecedario27" name="rdAbecedario">
-            </div>
-            <div class="form-group">
-                <label>Inverso:</label>
-                <input type="checkbox" id="chkInverso" name="chkInverso">
-            </div>
-            <div class="form-group">
-                <label>Alfanumerico:</label>
-                <input type="checkbox" id="chkAlfanumerico" name="chkAlfanumerico">
-            </div>
-            <div class="form-group">
-                <label>Iniciar desde:</label>
-                <input type="text" id="txtLetraInicial" name="txtLetraInicial">
-            </div>
-            <div class="form-group">
-                <label>Palabra clave:</label>
-                <input type="text" id="txtPalabraClave" name="txtPalabraClave">
-            </div>
-            <div class="form-group full-width">
-                <button onclick="generar()">Generar Abecedario</button>
-            </div>            
+        <div class="campo">
+            <label>Letra inicial:</label>
+            <input type="text" id="txtLetraInicial" name="txtLetraInicial">
         </div>
+        <div class="campo">
+            <label>Palabra clave:</label>
+            <input type="text" id="txtPalabraClave" name="txtPalabraClave">
+        </div>
+        <div class="campo-opcion">
+            <input type="checkbox" id="chkInverso" name="chkInverso">
+            <label>Abecedario inverso:</label>            
+        </div>
+        <div class="campo-opcion">
+            <input type="checkbox" id="chkAlfanumerico" name="chkAlfanumerico">
+            <label>Alfanumerico:</label>
+        </div>
+        <div class="grupo-radio">
+            <span>Tipo de abecedario</span>
+
+            <label><input type="radio" id="rdAbecedario26" name="rdAbecedario" checked>26 letras:</label>
+            <label><input type="radio" id="rdAbecedario27" name="rdAbecedario">27 letras:</label>
+        </div>
+        <br>        
+        <button onclick="generar()">Generar Abecedario</button>
     </fieldset>
 
-    <p id="resultado"></p>
+    <p id="resultado"></p> 
 
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="{{ data.abecedarioBase|length }}">ABECEDARIO ORIGINAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {% for letra in data.abecedarioBase %}                
-                        <td>{{ letra }}</td>
-                    {% endfor %}
-                </tr>
-            </tbody>
-        </table>
-    </div>   
-
-    <div>
+    <div class="contenedor-tabla">
         <table id="tablaAbecedario" style="display: none;">
             <thead>
                 <tr>
@@ -72,21 +50,24 @@
         </table>
     </div>
 
-    <div>
-        <input type="text" style="width: 100%; max-width: 600px;">
-        <button>Generar Trasposicion</button>
-    </div>
-
     <div id="divVariables" style="display: none;">
-        <input type="text" id="txtTrasposicion" name="txtTrasposicion">
-        <button onclick="generarTrasposicion()">Trasposicion</button>
-        <input type="text" id="txtTrama" name="txtTrama">
-        <button onclick="generarTrama()">Trama</button>
-        <input type="text" id="txtClaveNumerica" name="txtClaveNumerica">
-        <button onclick="generarClaveNumerica()">Clave Numerica</button>
+        <fieldset class="grupo-formulario">
+            <div class="campo">
+                <input type="text" id="txtCifrado" style="width: 100%; max-width: 600px;">        
+            </div>
+            <div class="grupo-radio">
+                <span>Tipo de cifrado</span>
+
+                <label><input type="radio" id="rdTrasposicion" name="rdCifrado" checked>Trasposicion</label>
+                <label><input type="radio" id="rdTrama" name="rdCifrado">Trama</label>
+                <label><input type="radio" id="rdClaveNumerica" name="rdCifrado">Clave Numerica</label>
+            </div>
+            <br>
+            <button onclick="generarCifrado()">Generar Cifrado</button>
+        </fieldset>
     </div>
 
-    <div>
+    <div class="contenedor-tabla">
         <table id="tablaGenerada" style="display: none;">
             <thead>
                 <tr>
@@ -100,32 +81,6 @@
     </div>
 
     <div>
-        <table id="tablaTrasposicion" style="display: none;">
-            <thead>
-                <tr>
-                    <th id="tituloTablaTrasposicion"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="filaTablaTrasposicion"></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div>
-        <table id="tablaTrama" style="display: none;">
-            <thead>
-                <tr>
-                    <th id="tituloTablaTrama"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="filaTablaTrama"></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div>
         <table id="tablaClaveNumericaExplicativa" style="display: none;">
             <thead>
                 
@@ -134,23 +89,23 @@
                 
             </tbody>
         </table>
-        <br>
-        <table id="tablaClaveNumerica" style="display: none;">
-            <thead>
-                <tr>
-                    <th id="tituloTablaClaveNumerica"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="filaTablaClaveNumerica"></tr>
-            </tbody>
-        </table>
+    </div>
+
+    <div id="divEncriptar" style="display: none;">
+        <fieldset class="grupo-formulario">
+            <div class="campo">
+                <input type="text" id="txtFrase" style="width: 100%; max-width: 600px;">
+            </div>
+            <button onclick="generarEncriptacion()">Encriptar</button>
+        </fieldset>
     </div>
 
 {% endblock %}
 
 {% block scripts %}
     <script>
-        
+        function generarEncriptacion(){
+            alert('XD')
+        }
     </script>    
 {% endblock %}
