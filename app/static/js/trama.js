@@ -16,7 +16,7 @@ function generarTrama(){
 
 function obtenerDatosTrama(){
     return {
-        trama: document.getElementById("txtTrama").value,
+        trama: document.getElementById("txtCifrado").value,
         abecedario: abecedarioBase
     };        
 }
@@ -24,12 +24,13 @@ function obtenerDatosTrama(){
 function procesarTrama(data) {
 
     if (data.abecedario_generado.length === 0) {
-        mostrarMensajeSinResultado("tituloTablaTrama", "No se generó ningún abecedario");
+        mostrarMensajeSinResultado("tituloTablaGenerada", "No se generó ningún abecedario");
         return;
     }
 
-    renderizarTabla("filaTablaTrama", "tituloTablaTrama", "ABECEDARIO TRAMA GENERADO", data.abecedario_generado);
+    renderizarTabla("filaTablaGenerada", "tituloTablaGenerada", "ABECEDARIO TRAMA GENERADO", data.abecedario_generado);
     actualizarTablaExplicativa(data.abecedario_explicativo);
 
-    document.getElementById("tablaTrama").style.display = "table";
+    document.getElementById("tablaGenerada").style.display = "table";
+    document.getElementById("tablaClaveNumericaExplicativa").style.display = "none";
 }
