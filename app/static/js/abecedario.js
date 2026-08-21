@@ -1,3 +1,25 @@
+function generarCifrado(){
+
+    if(document.getElementById("txtCifrado").value == ""){
+        alert("El campo no puede estar vacio");
+        return;
+    }
+
+    if(document.getElementById("rdTrasposicion").checked){
+        generarTrasposicion();
+    }
+
+    if(document.getElementById("rdTrama").checked){
+        generarTrama();
+    }
+
+    if(document.getElementById("rdClaveNumerica").checked){
+        generarClaveNumerica();
+    }
+
+    document.getElementById("divEncriptar").style.display = "flex";
+}
+
 /* =========================================================
     GENERAR ABECEDARIO
 ========================================================= */
