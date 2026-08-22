@@ -2,6 +2,7 @@
     FUNCIONES GENERALES
 ========================================================= */
 let abecedarioBase;
+let abecedarioGenerado;
 
 function enviarPost(url, datos){
 
