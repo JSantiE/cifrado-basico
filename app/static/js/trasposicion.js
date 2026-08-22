@@ -22,6 +22,7 @@ function obtenerDatosTrasposicion(){
 }
 
 function procesarTrasposicion(data) {
+    abecedarioGenerado = data.abecedario_generado;
 
     if (data.abecedario_generado.length === 0) {
         mostrarMensajeSinResultado("tituloTablaGenerada", "No se generó ningún abecedario");
