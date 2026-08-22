@@ -94,8 +94,14 @@
     <div id="divEncriptar" style="display: none;">
         <fieldset class="grupo-formulario">
             <div class="campo">
-                <input type="text" id="txtFrase" style="width: 100%; max-width: 600px;">
+                <input type="text" id="txtCadena" style="width: 100%; max-width: 600px;">
             </div>
+            <div class="grupo-radio">
+                
+                <label><input type="radio" id="rdEncriptar" name="rdEncriptacion" checked>Encriptar</label>
+                <label><input type="radio" id="rdDesencriptar" name="rdEncriptacion">Desencriptar</label>
+            </div>
+            <br>
             <button onclick="generarEncriptacion()">Encriptar</button>
         </fieldset>
     </div>
@@ -105,7 +111,26 @@
 {% block scripts %}
     <script>
         function generarEncriptacion(){
-            alert('XD')
+            const datos = obtenerDatosEncriptacion();
+
+            enviarPost("/generarEncriptacion", datos)
+                .then(data => {
+                    alert(data.cadena)
+                })
+                .catch(error => {
+                    mostrarError("Error al generar la encriptación.", error);
+                });
+        }
+
+        function obtenerDatosEncriptacion(){
+            return {
+                cadena: document.getElementById("txtCadena").value,
+                abecedario: abecedarioBase,
+                abecedarioGenerado: abecedarioGenerado,
+                estado: document.getElementById("rdEncriptar").checked
+                    ? true
+                    : false
+            };  
         }
     </script>    
 {% endblock %}
