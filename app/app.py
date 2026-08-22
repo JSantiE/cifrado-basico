@@ -78,6 +78,42 @@ def generarClaveNumerica():
     res = make_response(jsonify({"abecedario_generado": list(tblClaveNumerica), "abecedario_explicativo": list(tblAbecedario), "columnas": columnas}), 200)
     return res
 
+@app.route("/generarEncriptacion", methods=["POST"])
+def generarEncriptacion():
+    req = request.get_json()
+    
+    cadena = req.get("cadena")
+    abecedario = list(req.get("abecedario"))
+    abecedarioGenerado = list(req.get("abecedarioGenerado"))
+    estado = req.get("estado")
+    n = 0
+    res = ""
+    cadena = cadena.upper()
+ 
+    if estado :
+        for i,letra in enumerate(cadena):
+            if letra == " ":
+                n += 1
+                res += " "
+                continue
+            
+            posicion = abecedario.index(letra)
+            x = posicion + (i + 1 -n)
+            x = (x - 1) % len(abecedarioGenerado)            
+            res += abecedarioGenerado[x]
+    else:
+        for i,letra in enumerate(cadena):
+            if letra == " ":
+                n += 1
+                res += " "
+                continue
+            
+            posicion = abecedarioGenerado.index(letra)
+            x = posicion - (i + 1 -n)            
+            res += abecedario[x + 1]
+                
+    return make_response(jsonify({"cadena" : res}), 200);
+
 def pagina_no_encontrada(error):
     return render_template("404.html"), 404
 
